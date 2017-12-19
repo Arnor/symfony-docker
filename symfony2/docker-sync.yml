@@ -1,0 +1,11 @@
+version: '2'  
+syncs:  
+  app-sync:
+    src: './app'
+    sync_userid: '1000'
+    sync_groupid: '82'
+
+  vendor-sync:
+    src: './vendor'
+    sync_userid: '1000'
+    sync_groupid: '82'

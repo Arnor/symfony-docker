@@ -1,0 +1,44 @@
+version: "3"
+networks:
+  potify_subnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.4.0/24
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - 83:80
+    volumes:
+      - ./:/code
+      - ../symfony-1.4.20:/symfony
+      - ./.docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
+    networks:
+      potify_subnet:
+        ipv4_address: 172.16.4.3
+
+  php:
+    image: php:5.6.31-fpm
+    build: ./.docker/php-fpm
+    restart: always
+    volumes:
+      - app-sync:/code/app
+      - vendor-sync:/code/vendor
+      - ./:/code
+      - ./src:/code/src:consistent
+      - ../symfony-1.4.20:/symfony
+      - ./.docker/php-fpm/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      potify_subnet:
+        ipv4_address: 172.16.4.2
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIAJ6XVAHXCD7EMZ7WQ
+      - AWS_SECRET_ACCESS_KEY=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
+
+volumes:  
+  app-sync:
+    external: true
+  vendor-sync:
+    external: true

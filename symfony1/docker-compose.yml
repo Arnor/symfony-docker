@@ -1,0 +1,44 @@
+version: "3"
+networks:
+  app_subnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.1.0/24
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "82:80"
+    volumes:
+      - ./:/code
+      - ../symfony-1.4.19:/symfony
+      - ./.docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
+    networks:
+      app_subnet:
+        ipv4_address: 172.16.1.3
+
+#  db:
+#    image: mysql
+#    volumes:
+#      - /usr/local/var/mysql:/var/lib/mysql
+#    restart: always
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: backend
+#      MYSQL_USER: backend
+#      MYSQL_PASSWORD: backend
+#    networks:
+#      app_subnet:
+#        ipv4_address: 172.16.1.4
+  php:
+    image: php:5.6.31-fpm
+    build: ./.docker/php-fpm
+    restart: always
+    volumes:
+      - ./:/code
+      - ../symfony-1.4.19:/symfony
+    networks:
+      app_subnet:
+        ipv4_address: 172.16.1.2
